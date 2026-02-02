@@ -123,7 +123,7 @@ export default function AffiliateDashboard() {
             <p className="text-2xl md:text-3xl font-bold text-yellow-400">{stats?.conversionRate || 0}%</p>
           </div>
           <div className="bg-slate-800 rounded-lg p-4 md:p-6 border border-slate-700">
-            <p className="text-slate-400 text-xs md:text-sm mb-1">Total Earnings</p>
+            <p className="text-slate-400 text-xs md:text-sm mb-1">Estimated Value</p>
             <p className="text-2xl md:text-3xl font-bold text-emerald-400">${stats?.totalEarnings || "0.00"}</p>
           </div>
         </div>
@@ -134,11 +134,10 @@ export default function AffiliateDashboard() {
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-4 py-2 rounded-lg font-medium text-sm whitespace-nowrap transition-colors ${
-                activeTab === tab
-                  ? "bg-blue-600 text-white"
-                  : "bg-slate-800 text-slate-300 hover:bg-slate-700"
-              }`}
+              className={`px-4 py-2 rounded-lg font-medium text-sm whitespace-nowrap transition-colors ${activeTab === tab
+                ? "bg-blue-600 text-white"
+                : "bg-slate-800 text-slate-300 hover:bg-slate-700"
+                }`}
             >
               {tab.charAt(0).toUpperCase() + tab.slice(1)}
             </button>
@@ -167,23 +166,20 @@ export default function AffiliateDashboard() {
               </div>
             </div>
 
-            {/* Commission Info */}
-            <div className="bg-gradient-to-r from-emerald-900/50 to-blue-900/50 rounded-lg p-4 md:p-6 border border-emerald-700/50">
-              <h2 className="text-lg font-semibold mb-2">Commission Structure</h2>
-              <div className="grid md:grid-cols-3 gap-4">
+            {/* Tracking Info */}
+            <div className="bg-gradient-to-r from-blue-900/50 to-purple-900/50 rounded-lg p-4 md:p-6 border border-blue-700/50">
+              <h2 className="text-lg font-semibold mb-2">Conversion Tracking</h2>
+              <div className="grid md:grid-cols-2 gap-4">
                 <div>
-                  <p className="text-slate-400 text-sm">Your Commission Rate</p>
-                  <p className="text-2xl font-bold text-emerald-400">{affiliate.commissionRate}%</p>
-                </div>
-                <div>
-                  <p className="text-slate-400 text-sm">Per $47 Sale</p>
-                  <p className="text-2xl font-bold text-white">$14.10</p>
+                  <p className="text-slate-400 text-sm">Payout Per Conversion</p>
+                  <p className="text-2xl font-bold text-emerald-400">${affiliate.payoutPerConversion || 70}</p>
                 </div>
                 <div>
                   <p className="text-slate-400 text-sm">Cookie Duration</p>
                   <p className="text-2xl font-bold text-white">90 Days</p>
                 </div>
               </div>
+              <p className="text-slate-300 text-xs mt-3">Payouts are processed by your affiliate network. This dashboard tracks conversions only.</p>
             </div>
 
             {/* Recent Activity */}
@@ -222,7 +218,7 @@ export default function AffiliateDashboard() {
             <div className="bg-slate-800 rounded-lg p-4 md:p-6 border border-slate-700">
               <h2 className="text-lg font-semibold mb-4">Your Tracking Links</h2>
               <p className="text-slate-400 text-sm mb-6">Use these links to track different campaigns or traffic sources.</p>
-              
+
               <div className="space-y-4">
                 {[
                   { name: "Main Landing Page", url: `${baseUrl}?ref=${affiliate.affiliateCode}` },
@@ -281,7 +277,7 @@ export default function AffiliateDashboard() {
           <div className="space-y-6">
             <div className="bg-slate-800 rounded-lg p-4 md:p-6 border border-slate-700">
               <h2 className="text-lg font-semibold mb-4">Marketing Materials</h2>
-              
+
               {/* Email Swipes */}
               <div className="mb-8">
                 <h3 className="text-md font-medium text-blue-400 mb-3">Email Swipes</h3>
@@ -348,7 +344,7 @@ export default function AffiliateDashboard() {
           <div className="space-y-6">
             <div className="bg-slate-800 rounded-lg p-4 md:p-6 border border-slate-700">
               <h2 className="text-lg font-semibold mb-4">Performance Reports</h2>
-              
+
               {/* Last 30 Days Summary */}
               <div className="grid md:grid-cols-3 gap-4 mb-8">
                 <div className="bg-slate-900 rounded-lg p-4 text-center">
@@ -360,7 +356,7 @@ export default function AffiliateDashboard() {
                   <p className="text-2xl font-bold text-green-400">{detailedStats?.last30Days?.conversions || 0}</p>
                 </div>
                 <div className="bg-slate-900 rounded-lg p-4 text-center">
-                  <p className="text-slate-400 text-sm">Last 30 Days Earnings</p>
+                  <p className="text-slate-400 text-sm">Last 30 Days Value</p>
                   <p className="text-2xl font-bold text-emerald-400">${detailedStats?.last30Days?.earnings?.toFixed(2) || "0.00"}</p>
                 </div>
               </div>
@@ -373,8 +369,7 @@ export default function AffiliateDashboard() {
                     <thead>
                       <tr className="text-left text-slate-400 border-b border-slate-700">
                         <th className="pb-3">Date</th>
-                        <th className="pb-3">Sale Amount</th>
-                        <th className="pb-3">Commission</th>
+                        <th className="pb-3">Lead Value</th>
                         <th className="pb-3">Status</th>
                       </tr>
                     </thead>
@@ -382,15 +377,10 @@ export default function AffiliateDashboard() {
                       {detailedStats.recentConversions.map((conv: any, i: number) => (
                         <tr key={i} className="text-slate-300">
                           <td className="py-3">{new Date(conv.created_at).toLocaleDateString()}</td>
-                          <td className="py-3">${parseFloat(conv.amount).toFixed(2)}</td>
-                          <td className="py-3 text-emerald-400">${parseFloat(conv.commission).toFixed(2)}</td>
+                          <td className="py-3 text-emerald-400">${parseFloat(conv.commission || conv.amount).toFixed(2)}</td>
                           <td className="py-3">
-                            <span className={`px-2 py-1 rounded text-xs ${
-                              conv.status === "paid" ? "bg-green-900 text-green-300" :
-                              conv.status === "approved" ? "bg-blue-900 text-blue-300" :
-                              "bg-yellow-900 text-yellow-300"
-                            }`}>
-                              {conv.status}
+                            <span className="px-2 py-1 rounded text-xs bg-green-900 text-green-300">
+                              Tracked
                             </span>
                           </td>
                         </tr>
@@ -403,23 +393,7 @@ export default function AffiliateDashboard() {
               )}
             </div>
 
-            {/* Payout Info */}
-            <div className="bg-slate-800 rounded-lg p-4 md:p-6 border border-slate-700">
-              <h2 className="text-lg font-semibold mb-4">Payout Information</h2>
-              <div className="grid md:grid-cols-2 gap-4">
-                <div>
-                  <p className="text-slate-400 text-sm">PayPal Email</p>
-                  <p className="text-white">{affiliate.paypalEmail}</p>
-                </div>
-                <div>
-                  <p className="text-slate-400 text-sm">Pending Earnings</p>
-                  <p className="text-2xl font-bold text-yellow-400">${stats?.pendingEarnings || "0.00"}</p>
-                </div>
-              </div>
-              <p className="text-slate-400 text-sm mt-4">
-                Payouts are processed weekly on Fridays for all approved commissions over $50.
-              </p>
-            </div>
+
           </div>
         )}
       </main>
