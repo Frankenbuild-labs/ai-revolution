@@ -15,6 +15,7 @@ export default function FinalStepPage() {
   const [isMuted, setIsMuted] = useState(true)
   const [isPlaying, setIsPlaying] = useState(true)
   const videoRef = useRef<HTMLVideoElement>(null)
+  const [paymentMethod, setPaymentMethod] = useState<'card' | 'zelle'>('card')
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -490,127 +491,226 @@ export default function FinalStepPage() {
             {!showDownsell ? (
               <>
                 <h2 className="text-xl md:text-2xl font-bold text-center mb-2">Complete Your Order</h2>
-                <p className="text-center text-gray-600 text-sm md:text-base mb-6">Get instant access for only $47!</p>{" "}
-                <form onSubmit={handleSubmit} className="space-y-3 md:space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1">
-                        First Name
-                      </label>
-                      <input
-                        type="text"
-                        id="firstName"
-                        name="firstName"
-                        value={formData.firstName}
-                        onChange={handleInputChange}
-                        className="w-full px-4 py-3 rounded-full border-2 border-gray-200 focus:border-[#5B5FED] focus:outline-none transition-colors"
-                        placeholder="John"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-1">
-                        Last Name
-                      </label>
-                      <input
-                        type="text"
-                        id="lastName"
-                        name="lastName"
-                        value={formData.lastName}
-                        onChange={handleInputChange}
-                        className="w-full px-4 py-3 rounded-full border-2 border-gray-200 focus:border-[#5B5FED] focus:outline-none transition-colors"
-                        placeholder="Doe"
-                        required
-                      />
-                    </div>
-                  </div>
 
-                  <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                      Email Address
-                    </label>
-                    <input
-                      type="email"
-                      id="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-3 rounded-full border-2 border-gray-200 focus:border-[#5B5FED] focus:outline-none transition-colors"
-                      placeholder="john@example.com"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label htmlFor="cardNumber" className="block text-sm font-medium text-gray-700 mb-1">
-                      Card Number
-                    </label>
-                    <input
-                      type="text"
-                      id="cardNumber"
-                      name="cardNumber"
-                      value={formData.cardNumber}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-3 rounded-full border-2 border-gray-200 focus:border-[#5B5FED] focus:outline-none transition-colors"
-                      placeholder="1234 5678 9012 3456"
-                      maxLength={19}
-                      required
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label htmlFor="expirationDate" className="block text-sm font-medium text-gray-700 mb-1">
-                        Expiry Date
-                      </label>
-                      <input
-                        type="text"
-                        id="expirationDate"
-                        name="expirationDate"
-                        value={formData.expirationDate}
-                        onChange={handleInputChange}
-                        className="w-full px-4 py-3 rounded-full border-2 border-gray-200 focus:border-[#5B5FED] focus:outline-none transition-colors"
-                        placeholder="MM/YY"
-                        maxLength={5}
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label htmlFor="cvv" className="block text-sm font-medium text-gray-700 mb-1">
-                        CVV
-                      </label>
-                      <input
-                        type="text"
-                        id="cvv"
-                        name="cvv"
-                        value={formData.cvv}
-                        onChange={handleInputChange}
-                        className="w-full px-4 py-3 rounded-full border-2 border-gray-200 focus:border-[#5B5FED] focus:outline-none transition-colors"
-                        placeholder="123"
-                        maxLength={4}
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  {paymentMessage && (
-                    <div
-                      className={`p-3 rounded-lg text-sm text-center ${paymentMessage.startsWith("✅") ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}
-                    >
-                      {paymentMessage}
-                    </div>
-                  )}
-
-                  <div className="pt-4">
+                {/* Payment Method Selection */}
+                <div className="mb-4">
+                  <div className="flex gap-2 mb-3">
                     <button
-                      type="submit"
-                      disabled={isProcessing}
-                      className="w-full bg-[#5B5FED] hover:bg-[#4A4EDD] disabled:bg-gray-400 text-white font-bold py-3 md:py-4 px-6 rounded-full text-base md:text-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      type="button"
+                      onClick={() => setPaymentMethod('card')}
+                      className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-all ${paymentMethod === 'card'
+                        ? 'bg-[#5B5FED] text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        }`}
                     >
-                      {isProcessing ? "Processing..." : "PAY $47 NOW"}
+                      💳 Credit Card
+                      <div className="text-sm font-normal mt-1">$47</div>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setPaymentMethod('zelle')}
+                      className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-all ${paymentMethod === 'zelle'
+                        ? 'bg-[#5B5FED] text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        }`}
+                    >
+                      📱 Zelle
+                      <div className="text-sm font-normal mt-1">$27 <span className="text-xs">(Save $20!)</span></div>
                     </button>
                   </div>
-                </form>
+                </div>
+
+                {paymentMethod === 'card' ? (
+                  <form onSubmit={handleSubmit} className="space-y-3 md:space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1">
+                          First Name
+                        </label>
+                        <input
+                          type="text"
+                          id="firstName"
+                          name="firstName"
+                          value={formData.firstName}
+                          onChange={handleInputChange}
+                          className="w-full px-4 py-3 rounded-full border-2 border-gray-200 focus:border-[#5B5FED] focus:outline-none transition-colors"
+                          placeholder="John"
+                          required
+                        />
+                      </div>
+                      <div>
+                        <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-1">
+                          Last Name
+                        </label>
+                        <input
+                          type="text"
+                          id="lastName"
+                          name="lastName"
+                          value={formData.lastName}
+                          onChange={handleInputChange}
+                          className="w-full px-4 py-3 rounded-full border-2 border-gray-200 focus:border-[#5B5FED] focus:outline-none transition-colors"
+                          placeholder="Doe"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                        Email Address
+                      </label>
+                      <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        className="w-full px-4 py-3 rounded-full border-2 border-gray-200 focus:border-[#5B5FED] focus:outline-none transition-colors"
+                        placeholder="john@example.com"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label htmlFor="cardNumber" className="block text-sm font-medium text-gray-700 mb-1">
+                        Card Number
+                      </label>
+                      <input
+                        type="text"
+                        id="cardNumber"
+                        name="cardNumber"
+                        value={formData.cardNumber}
+                        onChange={handleInputChange}
+                        className="w-full px-4 py-3 rounded-full border-2 border-gray-200 focus:border-[#5B5FED] focus:outline-none transition-colors"
+                        placeholder="1234 5678 9012 3456"
+                        maxLength={19}
+                        required
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label htmlFor="expirationDate" className="block text-sm font-medium text-gray-700 mb-1">
+                          Expiry Date
+                        </label>
+                        <input
+                          type="text"
+                          id="expirationDate"
+                          name="expirationDate"
+                          value={formData.expirationDate}
+                          onChange={handleInputChange}
+                          className="w-full px-4 py-3 rounded-full border-2 border-gray-200 focus:border-[#5B5FED] focus:outline-none transition-colors"
+                          placeholder="MM/YY"
+                          maxLength={5}
+                          required
+                        />
+                      </div>
+                      <div>
+                        <label htmlFor="cvv" className="block text-sm font-medium text-gray-700 mb-1">
+                          CVV
+                        </label>
+                        <input
+                          type="text"
+                          id="cvv"
+                          name="cvv"
+                          value={formData.cvv}
+                          onChange={handleInputChange}
+                          className="w-full px-4 py-3 rounded-full border-2 border-gray-200 focus:border-[#5B5FED] focus:outline-none transition-colors"
+                          placeholder="123"
+                          maxLength={4}
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    {paymentMessage && (
+                      <div
+                        className={`p-3 rounded-lg text-sm text-center ${paymentMessage.startsWith("✅") ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}
+                      >
+                        {paymentMessage}
+                      </div>
+                    )}
+
+                    <div className="pt-4">
+                      <button
+                        type="submit"
+                        disabled={isProcessing}
+                        className="w-full bg-[#5B5FED] hover:bg-[#4A4EDD] disabled:bg-gray-400 text-white font-bold py-3 md:py-4 px-6 rounded-full text-base md:text-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {isProcessing ? "Processing..." : "PAY $47 NOW"}
+                      </button>
+                    </div>
+                  </form>
+                ) : (
+                  <div className="space-y-4">
+                    <p className="text-center text-gray-600 text-sm md:text-base mb-4">
+                      Get instant access for only <span className="font-bold text-green-600 text-lg">$27</span>!
+                      <br />
+                      <span className="text-xs">(Save $20 with Zelle!)</span>
+                    </p>
+
+                    <div className="bg-gradient-to-br from-purple-50 to-blue-50 p-6 rounded-xl border-2 border-purple-200">
+                      <h3 className="font-bold text-center mb-3">Scan to Pay with Zelle</h3>
+                      <div className="flex justify-center mb-4">
+                        <img
+                          src="/zelle_qr_code.jpg"
+                          alt="Zelle QR Code"
+                          className="w-64 h-auto rounded-lg shadow-lg"
+                        />
+                      </div>
+                      <div className="text-center space-y-2 text-sm text-gray-700">
+                        <p className="font-semibold">📱 Open your banking app</p>
+                        <p>🔍 Find Zelle and scan this QR code</p>
+                        <p className="font-bold text-lg text-purple-700">💵 Send exactly $27.00</p>
+                        <p className="text-xs text-gray-500 mt-3">
+                          Payment to: <span className="font-semibold">PULSE MEDIA LABS</span>
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="bg-yellow-50 border-2 border-yellow-300 rounded-lg p-4 text-sm">
+                      <p className="font-semibold text-yellow-800 mb-2">⚡ Important:</p>
+                      <p className="text-yellow-700">
+                        After sending payment via Zelle, click the button below to proceed. You'll receive access details via email within 5-10 minutes.
+                      </p>
+                    </div>
+
+                    <button
+                      onClick={() => {
+                        // Save Zelle purchase record
+                        const storedLeadData = localStorage.getItem("leadData")
+                        const leadData = storedLeadData ? JSON.parse(storedLeadData) : {}
+
+                        fetch("/api/purchases", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({
+                            firstName: leadData.firstName || formData.firstName,
+                            lastName: leadData.lastName || formData.lastName,
+                            email: leadData.email || formData.email,
+                            phone: leadData.phone || null,
+                            amount: 27.0,
+                            cardLastFour: "ZELLE",
+                            transactionId: `ZELLE-${Date.now()}`,
+                            productType: "main-27-zelle",
+                          }),
+                        }).then(() => {
+                          window.location.href = "/upsell-1"
+                        }).catch((err) => {
+                          console.error("Error saving Zelle purchase:", err)
+                          window.location.href = "/upsell-1"
+                        })
+                      }}
+                      className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 md:py-4 px-6 rounded-full text-base md:text-lg transition-colors"
+                    >
+                      ✅ I've Sent $27 via Zelle - Continue
+                    </button>
+
+                    <p className="text-xs text-center text-gray-500">
+                      By clicking continue, you confirm that you've sent the payment via Zelle
+                    </p>
+                  </div>
+                )}
               </>
             ) : (
               <>
@@ -744,9 +844,8 @@ export default function FinalStepPage() {
 
                   {downsellMessage && (
                     <div
-                      className={`p-4 rounded-xl text-center font-semibold ${
-                        downsellMessage.includes("✅") ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
-                      }`}
+                      className={`p-4 rounded-xl text-center font-semibold ${downsellMessage.includes("✅") ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+                        }`}
                     >
                       {downsellMessage}
                     </div>

@@ -16,6 +16,7 @@ export default function Upsell1Page() {
   const [isPlaying, setIsPlaying] = useState(false)
   const [seatsRemaining, setSeatsRemaining] = useState(7)
   const videoRef = useRef<HTMLVideoElement>(null)
+  const [paymentMethod, setPaymentMethod] = useState<'card' | 'zelle'>('card')
 
   useEffect(() => {
     const timer1 = setTimeout(() => setSeatsRemaining(6), 20000) // 20 seconds
@@ -111,6 +112,31 @@ export default function Upsell1Page() {
     }
   }
 
+  const handleZelleConfirm = () => {
+    const customerData = localStorage.getItem("leadData")
+    const customer = customerData ? JSON.parse(customerData) : {}
+
+    fetch("/api/purchases", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        firstName: customer.firstName || "Customer",
+        lastName: customer.lastName || "Name",
+        email: customer.email || "customer@email.com",
+        phone: customer.phone || null,
+        amount: 49.0,
+        cardLastFour: "ZELLE",
+        transactionId: `ZELLE-UPSELL-${Date.now()}`,
+        productType: "upsell-mega-49-zelle",
+      }),
+    }).then(() => {
+      window.location.href = "/confirmation"
+    }).catch((err) => {
+      console.error("Error saving Zelle purchase:", err)
+      window.location.href = "/confirmation"
+    })
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950 py-6 md:py-8 px-4">
       <div className="max-w-5xl mx-auto text-center">
@@ -186,58 +212,135 @@ export default function Upsell1Page() {
             <p className="text-lg mb-2">"I Don't Want Too Many People To Have This Mega Profit Module</p>
           </div>
 
-          <div className="space-y-3 md:space-y-4 mb-4 md:mb-6">
-            <input
-              type="text"
-              placeholder="Card Number"
-              value={formData.cardNumber}
-              onChange={(e) => setFormData({ ...formData, cardNumber: e.target.value })}
-              className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none text-base"
-            />
-            <div className="grid grid-cols-2 gap-3 md:gap-4">
-              <input
-                type="text"
-                placeholder="MM/YY"
-                value={formData.expirationDate}
-                onChange={(e) => setFormData({ ...formData, expirationDate: e.target.value })}
-                className="px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none text-base"
-              />
-              <input
-                type="text"
-                placeholder="CVV"
-                value={formData.cvv}
-                onChange={(e) => setFormData({ ...formData, cvv: e.target.value })}
-                className="px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none text-base"
-              />
+          {/* Payment Method Selection */}
+          <div className="mb-4">
+            <div className="flex gap-2 mb-3">
+              <button
+                type="button"
+                onClick={() => setPaymentMethod('card')}
+                className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-all ${paymentMethod === 'card'
+                    ? 'bg-yellow-400 text-black'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+              >
+                💳 Credit Card
+                <div className="text-sm font-normal mt-1">$97</div>
+              </button>
+              <button
+                type="button"
+                onClick={() => setPaymentMethod('zelle')}
+                className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-all ${paymentMethod === 'zelle'
+                    ? 'bg-yellow-400 text-black'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+              >
+                📱 Zelle
+                <div className="text-sm font-normal mt-1">$49 <span className="text-xs">(Save $48!)</span></div>
+              </button>
             </div>
           </div>
 
-          <button
-            onClick={handleAddToCart}
-            disabled={isProcessing}
-            className="w-full bg-yellow-400 hover:bg-yellow-500 text-black font-bold text-xl md:text-2xl py-3 md:py-4 px-6 md:px-8 rounded-lg mb-4 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isProcessing ? "Processing..." : "ADD!"}
-          </button>
+          {paymentMethod === 'card' ? (
+            <>
+              <div className="space-y-3 md:space-y-4 mb-4 md:mb-6">
+                <input
+                  type="text"
+                  placeholder="Card Number"
+                  value={formData.cardNumber}
+                  onChange={(e) => setFormData({ ...formData, cardNumber: e.target.value })}
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none text-base"
+                />
+                <div className="grid grid-cols-2 gap-3 md:gap-4">
+                  <input
+                    type="text"
+                    placeholder="MM/YY"
+                    value={formData.expirationDate}
+                    onChange={(e) => setFormData({ ...formData, expirationDate: e.target.value })}
+                    className="px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none text-base"
+                  />
+                  <input
+                    type="text"
+                    placeholder="CVV"
+                    value={formData.cvv}
+                    onChange={(e) => setFormData({ ...formData, cvv: e.target.value })}
+                    className="px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none text-base"
+                  />
+                </div>
+              </div>
 
-          {/* Credit Card Logos */}
-          <div className="flex justify-center gap-2 mb-4">
-            <div className="text-xs text-gray-600">💳 Visa • Mastercard • Amex • Discover</div>
-          </div>
+              <button
+                onClick={handleAddToCart}
+                disabled={isProcessing}
+                className="w-full bg-yellow-400 hover:bg-yellow-500 text-black font-bold text-xl md:text-2xl py-3 md:py-4 px-6 md:px-8 rounded-lg mb-4 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isProcessing ? "Processing..." : "ADD!"}
+              </button>
 
-          {/* Main CTA Link */}
-          <a
-            href="#"
-            onClick={(e) => {
-              e.preventDefault()
-              handleAddToCart()
-            }}
-            className="block text-blue-600 underline font-bold text-lg mb-2 hover:text-blue-800"
-          >
-            Click Here To Add To Cart NOW!
-          </a>
+              {/* Credit Card Logos */}
+              <div className="flex justify-center gap-2 mb-4">
+                <div className="text-xs text-gray-600">💳 Visa • Mastercard • Amex • Discover</div>
+              </div>
 
-          <p className="text-sm text-gray-600 mb-4">(Even if its 3:00 AM in The Morning)</p>
+              {/* Main CTA Link */}
+              <a
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault()
+                  handleAddToCart()
+                }}
+                className="block text-blue-600 underline font-bold text-lg mb-2 hover:text-blue-800"
+              >
+                Click Here To Add To Cart NOW!
+              </a>
+
+              <p className="text-sm text-gray-600 mb-4">(Even if its 3:00 AM in The Morning)</p>
+            </>
+          ) : (
+            <div className="space-y-4">
+              <p className="text-center text-gray-600 text-sm md:text-base mb-4">
+                Get the Mega Profit Module for only <span className="font-bold text-green-600 text-lg">$49</span>!
+                <br />
+                <span className="text-xs">(Save $48 with Zelle!)</span>
+              </p>
+
+              <div className="bg-gradient-to-br from-yellow-50 to-orange-50 p-6 rounded-xl border-2 border-yellow-200">
+                <h3 className="font-bold text-center mb-3">Scan to Pay with Zelle</h3>
+                <div className="flex justify-center mb-4">
+                  <img
+                    src="/zelle_qr_code.jpg"
+                    alt="Zelle QR Code"
+                    className="w-64 h-auto rounded-lg shadow-lg"
+                  />
+                </div>
+                <div className="text-center space-y-2 text-sm text-gray-700">
+                  <p className="font-semibold">📱 Open your banking app</p>
+                  <p>🔍 Find Zelle and scan this QR code</p>
+                  <p className="font-bold text-lg text-orange-700">💵 Send exactly $49.00</p>
+                  <p className="text-xs text-gray-500 mt-3">
+                    Payment to: <span className="font-semibold">PULSE MEDIA LABS</span>
+                  </p>
+                </div>
+              </div>
+
+              <div className="bg-yellow-50 border-2 border-yellow-300 rounded-lg p-4 text-sm">
+                <p className="font-semibold text-yellow-800 mb-2">⚡ Important:</p>
+                <p className="text-yellow-700">
+                  After sending payment via Zelle, click the button below to proceed. You'll receive access details via email within 5-10 minutes.
+                </p>
+              </div>
+
+              <button
+                onClick={handleZelleConfirm}
+                className="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 md:py-4 px-6 rounded-lg text-base md:text-lg transition-colors"
+              >
+                ✅ I've Sent $49 via Zelle - Continue
+              </button>
+
+              <p className="text-xs text-center text-gray-500">
+                By clicking continue, you confirm that you've sent the payment via Zelle
+              </p>
+            </div>
+          )}
 
           <button
             onClick={() => (window.location.href = "/confirmation")}
